@@ -1,0 +1,93 @@
+{{template "base" .}}
+
+{{define "content"}}
+<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+    <div>
+        <h3 class="fw-bold mb-1">ประวัติการแจ้งซ่อม</h3>
+        <p class="text-muted small mb-0">รายการแจ้งซ่อมห้อง {{.User.Username}} ({{.User.FullName}})</p>
+    </div>
+    <a href="/user/requests/new" class="btn btn-primary-dormfix d-flex align-items-center gap-1 shadow-sm">
+        <i class="bi bi-plus-circle"></i> แจ้งซ่อมใหม่
+    </a>
+</div>
+
+{{if not .Requests}}
+    <div class="card card-dormfix p-5 text-center my-4">
+        <div class="d-inline-flex p-3 rounded-circle bg-light text-muted mx-auto mb-3">
+            <i class="bi bi-inbox fs-1"></i>
+        </div>
+        <h5 class="fw-bold">ยังไม่มีประวัติการแจ้งซ่อม</h5>
+        <p class="text-muted small mb-3">หากมีอุปกรณ์หรือสิ่งของในห้องพักชำรุด สามารถกดปุ่มแจ้งซ่อมได้ทันที</p>
+        <div>
+            <a href="/user/requests/new" class="btn btn-primary-dormfix btn-sm">
+                <i class="bi bi-plus-circle me-1"></i> ส่งคำขอแจ้งซ่อมตอนนี้
+            </a>
+        </div>
+    </div>
+{{else}}
+    <div class="card card-dormfix overflow-hidden">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th class="ps-3" style="width: 80px;">รหัส</th>
+                        <th>หมวดหมู่</th>
+                        <th>หัวข้อปัญหา</th>
+                        <th>ช่วงเวลาที่สะดวก</th>
+                        <th>วันที่แจ้ง</th>
+                        <th class="text-center">สถานะ</th>
+                        <th class="text-end pe-3" style="width: 140px;">การจัดการ</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{range .Requests}}
+                        <tr>
+                            <td class="ps-3 fw-bold text-muted">#{{.ID}}</td>
+                            <td>
+                                <span class="badge bg-secondary bg-opacity-10 text-dark border">
+                                    {{.Category}}
+                                </span>
+                            </td>
+                            <td>
+                                <a href="/user/requests/{{.ID}}" class="fw-semibold text-decoration-none text-dark d-block">
+                                    {{.Title}}
+                                </a>
+                                <small class="text-muted text-truncate d-block" style="max-width: 250px;">{{.Description}}</small>
+                            </td>
+                            <td class="small text-muted">{{.ConvenientTime}}</td>
+                            <td class="small text-muted">{{.CreatedAt.Format "02/01/2006 15:04"}}</td>
+                            <td class="text-center">
+                                {{if eq .Status "pending"}}
+                                    <span class="badge badge-pending px-2 py-1"><i class="bi bi-hourglass me-1"></i> รอดำเนินการ</span>
+                                {{else if eq .Status "in_progress"}}
+                                    <span class="badge bg-info bg-opacity-10 text-info-emphasis border border-info px-2 py-1"><i class="bi bi-wrench me-1"></i> กำลังซ่อม</span>
+                                {{else if eq .Status "completed"}}
+                                    <span class="badge badge-active px-2 py-1"><i class="bi bi-check-circle me-1"></i> ซ่อมเสร็จแล้ว</span>
+                                {{else if eq .Status "cancelled"}}
+                                    <span class="badge bg-secondary bg-opacity-25 text-secondary border px-2 py-1"><i class="bi bi-x-circle me-1"></i> ยกเลิกแล้ว</span>
+                                {{end}}
+                            </td>
+                            <td class="text-end pe-3">
+                                <a href="/user/requests/{{.ID}}" class="btn btn-outline-primary btn-sm" title="ดูรายละเอียด">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                                {{if eq .Status "pending"}}
+                                    <a href="/user/requests/{{.ID}}/edit" class="btn btn-outline-warning btn-sm" title="แก้ไข">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    <form action="/user/requests/{{.ID}}/cancel" method="POST" class="d-inline" onsubmit="return confirm('ยืนยันการยกเลิกใบแจ้งซ่อมนี้?');">
+                                        <input type="hidden" name="csrf_token" value="{{$.CSRFToken}}">
+                                        <button type="submit" class="btn btn-outline-danger btn-sm" title="ยกเลิกคำร้อง">
+                                            <i class="bi bi-x-lg"></i>
+                                        </button>
+                                    </form>
+                                {{end}}
+                            </td>
+                        </tr>
+                    {{end}}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{{end}}
+{{end}}

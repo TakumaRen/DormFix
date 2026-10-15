@@ -1,0 +1,20 @@
+# Environment variables
+.env
+
+# Database and SQLite data files
+data/
+*.db
+*.db-journal
+*.db-wal
+
+# Build binaries
+bin/
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# IDE
+.vscode/
+.idea/

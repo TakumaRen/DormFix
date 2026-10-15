@@ -1,0 +1,90 @@
+{{template "base" .}}
+
+{{define "content"}}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <nav aria-label="breadcrumb" class="mb-3">
+            <ol class="breadcrumb small">
+                <li class="breadcrumb-item"><a href="/user/requests" class="text-decoration-none text-muted">ประวัติแจ้งซ่อม</a></li>
+                <li class="breadcrumb-item active">ใบแจ้งซ่อม #{{.Request.ID}}</li>
+            </ol>
+        </nav>
+
+        <div class="card card-dormfix mb-4">
+            <div class="card-header-dormfix bg-light d-flex justify-content-between align-items-center flex-wrap gap-2 text-start">
+                <div>
+                    <span class="badge bg-secondary bg-opacity-10 text-dark border me-1">{{.Request.Category}}</span>
+                    <h4 class="fw-bold d-inline align-middle">ใบแจ้งซ่อม #{{.Request.ID}}</h4>
+                    <p class="text-muted small mb-0 mt-1">แจ้งเมื่อ {{.Request.CreatedAt.Format "02/01/2006 15:04 น."}}</p>
+                </div>
+                <div>
+                    {{if eq .Request.Status "pending"}}
+                        <span class="badge badge-pending px-3 py-2 fs-6"><i class="bi bi-hourglass me-1"></i> รอดำเนินการ</span>
+                    {{else if eq .Request.Status "in_progress"}}
+                        <span class="badge bg-info bg-opacity-10 text-info-emphasis border border-info px-3 py-2 fs-6"><i class="bi bi-wrench me-1"></i> กำลังดำเนินการซ่อม</span>
+                    {{else if eq .Request.Status "completed"}}
+                        <span class="badge badge-active px-3 py-2 fs-6"><i class="bi bi-check-circle me-1"></i> ซ่อมเสร็จสิ้น</span>
+                    {{else if eq .Request.Status "cancelled"}}
+                        <span class="badge bg-secondary bg-opacity-25 text-secondary border px-3 py-2 fs-6"><i class="bi bi-x-circle me-1"></i> ยกเลิกแล้ว</span>
+                    {{end}}
+                </div>
+            </div>
+
+            <div class="card-body p-4">
+                <div class="row mb-3 pb-3 border-bottom">
+                    <div class="col-sm-4 text-muted">เลขห้องพัก:</div>
+                    <div class="col-sm-8 fw-semibold">ห้อง {{.Request.RoomNo}}</div>
+                </div>
+
+                <div class="row mb-3 pb-3 border-bottom">
+                    <div class="col-sm-4 text-muted">หัวข้อปัญหา:</div>
+                    <div class="col-sm-8 fw-bold text-dark fs-5">{{.Request.Title}}</div>
+                </div>
+
+                <div class="row mb-3 pb-3 border-bottom">
+                    <div class="col-sm-4 text-muted">รายละเอียดปัญหา:</div>
+                    <div class="col-sm-8" style="white-space: pre-wrap;">{{.Request.Description}}</div>
+                </div>
+
+                <div class="row mb-3 pb-3 border-bottom">
+                    <div class="col-sm-4 text-muted">ช่วงเวลาที่สะดวก:</div>
+                    <div class="col-sm-8 text-primary fw-medium"><i class="bi bi-clock me-1"></i>{{.Request.ConvenientTime}}</div>
+                </div>
+
+                <!-- ผลการซ่อม / บันทึกจากเจ้าหน้าที่ -->
+                <div class="mt-4 p-3 rounded bg-light border">
+                    <h6 class="fw-bold text-dark d-flex align-items-center gap-2 mb-2">
+                        <i class="bi bi-clipboard2-check text-primary"></i> บันทึกผลการซ่อม / หมายเหตุจากเจ้าหน้าที่
+                    </h6>
+                    {{if .Request.AdminNotes}}
+                        <p class="mb-0 text-dark" style="white-space: pre-wrap;">{{.Request.AdminNotes}}</p>
+                    {{else}}
+                        <p class="mb-0 text-muted fst-italic small">ยังไม่มีบันทึกผลการซ่อมจากเจ้าหน้าที่ในขณะนี้</p>
+                    {{end}}
+                </div>
+
+                <!-- ปุ่มการจัดการ -->
+                <div class="d-flex justify-content-between align-items-center mt-4 pt-3 border-top flex-wrap gap-2">
+                    <a href="/user/requests" class="btn btn-outline-secondary btn-sm">
+                        <i class="bi bi-arrow-left me-1"></i> กลับหน้ารายการ
+                    </a>
+
+                    {{if eq .Request.Status "pending"}}
+                        <div class="d-flex gap-2">
+                            <a href="/user/requests/{{.Request.ID}}/edit" class="btn btn-outline-warning btn-sm">
+                                <i class="bi bi-pencil me-1"></i> แก้ไขคำร้อง
+                            </a>
+                            <form action="/user/requests/{{.Request.ID}}/cancel" method="POST" class="m-0" onsubmit="return confirm('ยืนยันการยกเลิกใบแจ้งซ่อมนี้?');">
+                                <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
+                                <button type="submit" class="btn btn-outline-danger btn-sm">
+                                    <i class="bi bi-x-circle me-1"></i> ยกเลิกคำร้อง
+                                </button>
+                            </form>
+                        </div>
+                    {{end}}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{{end}}

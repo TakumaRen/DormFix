@@ -1,0 +1,45 @@
+{{template "base" .}}
+
+{{define "content"}}
+<div class="auth-container">
+    <div class="card card-dormfix">
+        <div class="card-header-dormfix">
+            <div class="d-inline-flex p-3 rounded-circle bg-primary bg-opacity-10 text-primary mb-2">
+                <i class="bi bi-person-circle fs-1"></i>
+            </div>
+            <h4 class="fw-bold mb-1">เข้าสู่ระบบหอพัก</h4>
+            <p class="text-muted small mb-0">ระบบแจ้งซ่อมและติดตามงานซ่อมบำรุงหอพัก</p>
+        </div>
+        <div class="card-body p-4">
+            <form action="/login" method="POST">
+                <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
+
+                <div class="mb-3">
+                    <label for="username" class="form-label fw-semibold">ชื่อผู้ใช้ / เลขห้องพัก</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-light text-muted"><i class="bi bi-door-closed"></i></span>
+                        <input type="text" class="form-control" id="username" name="username" placeholder="เช่น A303 หรือ admin" required autofocus value="{{.Username}}">
+                    </div>
+                    <div class="form-text small text-muted">ผู้เช่าใช้เลขห้องพัก เช่น A303 (ไม่จำกัดตัวพิมพ์เล็กหรือใหญ่)</div>
+                </div>
+
+                <div class="mb-4">
+                    <label for="password" class="form-label fw-semibold">รหัสผ่าน</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-light text-muted"><i class="bi bi-key"></i></span>
+                        <input type="password" class="form-control" id="password" name="password" placeholder="กรอกรหัสผ่านของท่าน" required>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary-dormfix w-100 py-2 d-flex align-items-center justify-content-center gap-2">
+                    <i class="bi bi-box-arrow-in-right"></i> เข้าสู่ระบบ
+                </button>
+            </form>
+        </div>
+        <div class="card-footer bg-light border-0 py-3 text-center rounded-bottom">
+            <span class="text-muted small">ยังไม่มีบัญชีห้องพัก?</span>
+            <a href="/register" class="fw-semibold text-decoration-none small ms-1 text-primary">สมัครสมาชิกผู้เช่าใหม่</a>
+        </div>
+    </div>
+</div>
+{{end}}

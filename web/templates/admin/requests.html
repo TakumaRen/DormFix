@@ -1,0 +1,120 @@
+{{template "base" .}}
+
+{{define "content"}}
+<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+    <div>
+        <h3 class="fw-bold mb-1"><i class="bi bi-card-checklist text-primary me-2"></i>รายการแจ้งซ่อมทั้งหมด</h3>
+        <p class="text-muted small mb-0">ตรวจสอบและจัดการคำร้องซ่อมบำรุงของทุกห้องพักในหอพัก</p>
+    </div>
+    <div>
+        <a href="/admin/dashboard" class="btn btn-outline-secondary btn-sm d-flex align-items-center gap-1">
+            <i class="bi bi-arrow-left"></i> กลับไปแดชบอร์ด
+        </a>
+    </div>
+</div>
+
+<!-- Search and Filter Bar -->
+<div class="card card-dormfix p-3 mb-4">
+    <form method="GET" action="/admin/requests" class="row g-2 align-items-center">
+        <div class="col-12 col-md-5">
+            <div class="input-group input-group-sm">
+                <span class="input-group-text bg-light text-muted border-end-0"><i class="bi bi-search"></i></span>
+                <input type="text" name="q" class="form-control border-start-0" placeholder="ค้นหาเลขห้อง, หัวข้อ, หรือรายละเอียด..." value="{{.SearchQuery}}">
+            </div>
+        </div>
+        <div class="col-12 col-md-4">
+            <div class="input-group input-group-sm">
+                <label class="input-group-text bg-light text-muted" for="statusFilter"><i class="bi bi-funnel me-1"></i> สถานะ</label>
+                <select name="status" id="statusFilter" class="form-select" onchange="this.form.submit()">
+                    <option value="" {{if eq .StatusFilter ""}}selected{{end}}>ทั้งหมดทุกสถานะ</option>
+                    <option value="pending" {{if eq .StatusFilter "pending"}}selected{{end}}>รอดำเนินการ (Pending)</option>
+                    <option value="in_progress" {{if eq .StatusFilter "in_progress"}}selected{{end}}>กำลังดำเนินการ (In Progress)</option>
+                    <option value="completed" {{if eq .StatusFilter "completed"}}selected{{end}}>ซ่อมเสร็จสิ้น (Completed)</option>
+                    <option value="cancelled" {{if eq .StatusFilter "cancelled"}}selected{{end}}>ยกเลิกแล้ว (Cancelled)</option>
+                </select>
+            </div>
+        </div>
+        <div class="col-12 col-md-3 d-flex gap-2">
+            <button type="submit" class="btn btn-primary-dormfix btn-sm flex-grow-1">
+                <i class="bi bi-search me-1"></i> ค้นหา
+            </button>
+            {{if or .SearchQuery .StatusFilter}}
+                <a href="/admin/requests" class="btn btn-outline-secondary btn-sm" title="ล้างตัวกรอง">
+                    <i class="bi bi-arrow-clockwise"></i>
+                </a>
+            {{end}}
+        </div>
+    </form>
+</div>
+
+<!-- Requests Table -->
+{{if not .Requests}}
+    <div class="card card-dormfix p-5 text-center my-4">
+        <div class="d-inline-flex p-3 rounded-circle bg-light text-muted mx-auto mb-3">
+            <i class="bi bi-inbox fs-1"></i>
+        </div>
+        <h5 class="fw-bold">ไม่พบรายการแจ้งซ่อม</h5>
+        <p class="text-muted small mb-0">ไม่มีรายการคำร้องที่ตรงกับเงื่อนไขการค้นหาหรือตัวกรองในขณะนี้</p>
+    </div>
+{{else}}
+    <div class="card card-dormfix overflow-hidden">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th class="ps-3" style="width: 70px;">รหัส</th>
+                        <th style="width: 100px;">ห้องพัก</th>
+                        <th>หมวดหมู่</th>
+                        <th>หัวข้อปัญหา</th>
+                        <th>ช่วงเวลาที่สะดวก</th>
+                        <th>วันที่แจ้ง</th>
+                        <th class="text-center">สถานะ</th>
+                        <th class="text-end pe-3" style="width: 120px;">การจัดการ</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{range .Requests}}
+                        <tr>
+                            <td class="ps-3 fw-bold text-muted">#{{.ID}}</td>
+                            <td>
+                                <span class="badge bg-primary bg-opacity-10 text-primary border border-primary-subtle fw-bold fs-6">
+                                    {{.RoomNo}}
+                                </span>
+                            </td>
+                            <td>
+                                <span class="badge bg-secondary bg-opacity-10 text-dark border">
+                                    {{.Category}}
+                                </span>
+                            </td>
+                            <td>
+                                <a href="/admin/requests/{{.ID}}" class="fw-semibold text-decoration-none text-dark d-block">
+                                    {{.Title}}
+                                </a>
+                                <small class="text-muted text-truncate d-block" style="max-width: 280px;">{{.Description}}</small>
+                            </td>
+                            <td class="small text-muted">{{.ConvenientTime}}</td>
+                            <td class="small text-muted">{{.CreatedAt.Format "02/01/2006 15:04"}}</td>
+                            <td class="text-center">
+                                {{if eq .Status "pending"}}
+                                    <span class="badge badge-pending px-2 py-1"><i class="bi bi-hourglass me-1"></i> รอดำเนินการ</span>
+                                {{else if eq .Status "in_progress"}}
+                                    <span class="badge bg-info bg-opacity-10 text-info-emphasis border border-info px-2 py-1"><i class="bi bi-wrench me-1"></i> กำลังซ่อม</span>
+                                {{else if eq .Status "completed"}}
+                                    <span class="badge badge-active px-2 py-1"><i class="bi bi-check-circle me-1"></i> ซ่อมเสร็จแล้ว</span>
+                                {{else if eq .Status "cancelled"}}
+                                    <span class="badge bg-secondary bg-opacity-25 text-secondary border px-2 py-1"><i class="bi bi-x-circle me-1"></i> ยกเลิกแล้ว</span>
+                                {{end}}
+                            </td>
+                            <td class="text-end pe-3">
+                                <a href="/admin/requests/{{.ID}}" class="btn btn-outline-primary btn-sm d-inline-flex align-items-center gap-1">
+                                    <i class="bi bi-pencil-square"></i> จัดการ
+                                </a>
+                            </td>
+                        </tr>
+                    {{end}}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{{end}}
+{{end}}

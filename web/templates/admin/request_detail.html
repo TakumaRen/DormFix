@@ -1,0 +1,138 @@
+{{template "base" .}}
+
+{{define "content"}}
+<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+    <div>
+        <div class="d-flex align-items-center gap-2 mb-1">
+            <a href="/admin/requests" class="text-decoration-none text-muted"><i class="bi bi-arrow-left"></i> ย้อนกลับ</a>
+            <span class="text-muted">/</span>
+            <span class="text-muted">คำร้อง #{{.Request.ID}}</span>
+        </div>
+        <h3 class="fw-bold mb-0">จัดการคำร้องแจ้งซ่อม #{{.Request.ID}}</h3>
+    </div>
+    <div>
+        {{if eq .Request.Status "pending"}}
+            <span class="badge badge-pending fs-6 px-3 py-2"><i class="bi bi-hourglass me-1"></i> รอดำเนินการ</span>
+        {{else if eq .Request.Status "in_progress"}}
+            <span class="badge bg-info bg-opacity-10 text-info-emphasis border border-info fs-6 px-3 py-2"><i class="bi bi-wrench me-1"></i> กำลังซ่อม</span>
+        {{else if eq .Request.Status "completed"}}
+            <span class="badge badge-active fs-6 px-3 py-2"><i class="bi bi-check-circle me-1"></i> ซ่อมเสร็จสิ้นแล้ว</span>
+        {{else if eq .Request.Status "cancelled"}}
+            <span class="badge bg-secondary bg-opacity-25 text-secondary border fs-6 px-3 py-2"><i class="bi bi-x-circle me-1"></i> ยกเลิกแล้ว</span>
+        {{end}}
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Left Column: Tenant Request Information -->
+    <div class="col-12 col-lg-7">
+        <div class="card card-dormfix p-4 mb-4">
+            <h5 class="fw-bold border-bottom pb-2 mb-3">
+                <i class="bi bi-info-circle text-primary me-2"></i>ข้อมูลคำร้องของผู้เช่า
+            </h5>
+
+            <div class="row g-3 mb-3">
+                <div class="col-sm-6">
+                    <label class="text-muted small d-block">ห้องพัก</label>
+                    <span class="badge bg-primary text-white fs-6 px-2 py-1">ห้อง {{.Request.RoomNo}}</span>
+                </div>
+                <div class="col-sm-6">
+                    <label class="text-muted small d-block">ผู้แจ้งซ่อม</label>
+                    <span class="fw-semibold text-dark">
+                        {{if .Tenant}}{{.Tenant.FullName}}{{else}}-{{end}}
+                    </span>
+                    {{if .Tenant}}
+                        <div class="small text-muted"><i class="bi bi-telephone me-1"></i>{{.Tenant.Phone}}</div>
+                    {{end}}
+                </div>
+                <div class="col-sm-6">
+                    <label class="text-muted small d-block">หมวดหมู่งานซ่อม</label>
+                    <span class="badge bg-secondary bg-opacity-10 text-dark border">
+                        {{.Request.Category}}
+                    </span>
+                </div>
+                <div class="col-sm-6">
+                    <label class="text-muted small d-block">ช่วงเวลาที่สะดวกให้เข้าซ่อม</label>
+                    <span class="fw-semibold text-dark"><i class="bi bi-clock me-1 text-muted"></i>{{.Request.ConvenientTime}}</span>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="text-muted small d-block">หัวข้อปัญหา</label>
+                <div class="p-2 bg-light rounded fw-semibold text-dark">{{.Request.Title}}</div>
+            </div>
+
+            <div class="mb-3">
+                <label class="text-muted small d-block">รายละเอียดความเสียหาย / ปัญหาที่พบ</label>
+                <div class="p-3 bg-light rounded text-dark" style="white-space: pre-line; min-height: 90px;">{{.Request.Description}}</div>
+            </div>
+
+            <div class="row g-2 text-muted small border-top pt-3">
+                <div class="col-sm-6">
+                    <i class="bi bi-calendar-event me-1"></i> วันที่แจ้ง: {{.Request.CreatedAt.Format "02/01/2006 15:04"}}
+                </div>
+                <div class="col-sm-6">
+                    <i class="bi bi-clock-history me-1"></i> อัปเดตล่าสุด: {{.Request.UpdatedAt.Format "02/01/2006 15:04"}}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Column: Admin Management Action Form [Form 2] -->
+    <div class="col-12 col-lg-5">
+        <div class="card card-dormfix p-4 border-start border-4 border-primary">
+            <h5 class="fw-bold border-bottom pb-2 mb-3">
+                <i class="bi bi-gear-fill text-primary me-2"></i>การจัดการงานซ่อม (สำหรับเจ้าหน้าที่)
+            </h5>
+
+            <form action="/admin/requests/{{.Request.ID}}" method="POST">
+                <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
+
+                <!-- Status Selection -->
+                <div class="mb-3">
+                    <label for="status" class="form-label fw-semibold">
+                        สถานะงานซ่อม <span class="text-danger">*</span>
+                    </label>
+                    <select name="status" id="status" class="form-select" required>
+                        <option value="pending" {{if eq .Request.Status "pending"}}selected{{end}}>
+                            ⏳ รอดำเนินการ (Pending)
+                        </option>
+                        <option value="in_progress" {{if eq .Request.Status "in_progress"}}selected{{end}}>
+                            🔧 กำลังดำเนินการซ่อม (In Progress)
+                        </option>
+                        <option value="completed" {{if eq .Request.Status "completed"}}selected{{end}}>
+                            ✅ ซ่อมเสร็จสิ้นแล้ว (Completed)
+                        </option>
+                        <option value="cancelled" {{if eq .Request.Status "cancelled"}}selected{{end}}>
+                            ❌ ยกเลิกคำร้อง (Cancelled)
+                        </option>
+                    </select>
+                    <div class="form-text small">
+                        เปลี่ยนสถานะตามขั้นตอนการดำเนินงานจริง เช่น มอบหมายช่าง หรือซ่อมเสร็จแล้ว
+                    </div>
+                </div>
+
+                <!-- Admin Notes / Maintenance Result -->
+                <div class="mb-4">
+                    <label for="admin_notes" class="form-label fw-semibold">
+                        บันทึกของเจ้าหน้าที่ / ผลการซ่อมบำรุง
+                    </label>
+                    <textarea name="admin_notes" id="admin_notes" class="form-control" rows="5" placeholder="บันทึกรายละเอียด เช่น ช่างเข้าตรวจสอบวันที่..., เปลี่ยนอะไหล่..., หรือสาเหตุการยกเลิก">{{.Request.AdminNotes}}</textarea>
+                    <div class="form-text small">
+                        บันทึกผลการซ่อมนี้จะแสดงให้ผู้เช่าห้องเห็นเมื่อตรวจสอบรายละเอียดคำร้อง
+                    </div>
+                </div>
+
+                <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-primary-dormfix fw-semibold py-2">
+                        <i class="bi bi-check2-circle me-1"></i> บันทึกการเปลี่ยนแปลง
+                    </button>
+                    <a href="/admin/requests" class="btn btn-outline-secondary">
+                        ยกเลิก / ย้อนกลับ
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{{end}}

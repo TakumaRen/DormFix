@@ -1,0 +1,44 @@
+{{template "base" .}}
+
+{{define "content"}}
+<div class="auth-container" style="max-width: 580px;">
+    <div class="card card-dormfix border-warning border-opacity-50">
+        <div class="card-header-dormfix bg-warning bg-opacity-10">
+            <div class="d-inline-flex p-3 rounded-circle bg-warning bg-opacity-25 text-warning-emphasis mb-2">
+                <i class="bi bi-hourglass-split fs-1"></i>
+            </div>
+            <h4 class="fw-bold text-dark mb-1">อยู่ระหว่างรอการอนุมัติห้องพัก</h4>
+            <span class="badge badge-pending px-3 py-1 fs-6">สถานะ: รอดำเนินการ (Pending)</span>
+        </div>
+        <div class="card-body p-4 text-center">
+            <p class="text-secondary mb-3">
+                บัญชีห้องพัก <strong>{{.User.Username}}</strong> ({{.User.FullName}}) ได้รับการลงทะเบียนในระบบเรียบร้อยแล้ว
+            </p>
+
+            <div class="card bg-light border-0 p-3 mb-4 text-start small">
+                <div class="d-flex align-items-center mb-2">
+                    <i class="bi bi-info-circle-fill text-warning me-2 fs-5"></i>
+                    <strong>คำแนะนำสำหรับผู้เช่า:</strong>
+                </div>
+                <ul class="mb-0 ps-3 text-muted">
+                    <li>เพื่อความปลอดภัยและความถูกต้องของข้อมูลห้องพัก เจ้าหน้าที่หอพักจะตรวจสอบสัญญาเช่าก่อนเปิดใช้งาน</li>
+                    <li>เมื่อเจ้าหน้าที่ตรวจสอบและกดอนุมัติเรียบร้อยแล้ว ท่านจะสามารถเข้าใช้งานระบบแจ้งซ่อมได้ทันที</li>
+                    <li>หากต้องการความเร่งด่วน กรุณาติดต่อสำนักงานหอพักนักศึกษาโดยตรง</li>
+                </ul>
+            </div>
+
+            <div class="d-flex justify-content-center gap-2">
+                <a href="/pending" class="btn btn-outline-primary d-flex align-items-center gap-1">
+                    <i class="bi bi-arrow-clockwise"></i> ตรวจสอบสถานะอีกครั้ง
+                </a>
+                <form action="/logout" method="POST" class="m-0">
+                    <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
+                    <button type="submit" class="btn btn-outline-secondary d-flex align-items-center gap-1">
+                        <i class="bi bi-box-arrow-right"></i> ออกจากระบบ
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{{end}}

@@ -1,0 +1,75 @@
+{{template "base" .}}
+
+{{define "content"}}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <nav aria-label="breadcrumb" class="mb-3">
+            <ol class="breadcrumb small">
+                <li class="breadcrumb-item"><a href="/user/requests" class="text-decoration-none text-muted">ประวัติแจ้งซ่อม</a></li>
+                <li class="breadcrumb-item active" aria-current="page">แจ้งซ่อมใหม่</li>
+            </ol>
+        </nav>
+
+        <div class="card card-dormfix">
+            <div class="card-header-dormfix bg-light py-3">
+                <h4 class="fw-bold mb-1"><i class="bi bi-pencil-square text-primary me-2"></i>แบบฟอร์มแจ้งซ่อมห้องพัก</h4>
+                <p class="text-muted small mb-0">กรุณากรอกข้อมูลปัญหาและระบุช่วงเวลาที่สะดวกให้ช่างเข้าดำเนินการ</p>
+            </div>
+            <div class="card-body p-4">
+                <form action="/user/requests/new" method="POST">
+                    <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
+
+                    <div class="row mb-3">
+                        <div class="col-md-6 mb-3 mb-md-0">
+                            <label class="form-label fw-semibold">เลขห้องพัก</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light text-muted"><i class="bi bi-door-closed"></i></span>
+                                <input type="text" class="form-control bg-light" value="{{.RoomNo}}" readonly>
+                            </div>
+                            <div class="form-text small text-muted">ผูกกับบัญชีห้องพักของท่านโดยอัตโนมัติ</div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="category" class="form-label fw-semibold">หมวดหมู่ปัญหา <span class="text-danger">*</span></label>
+                            <select class="form-select" id="category" name="category" required>
+                                <option value="" disabled {{if not .Category}}selected{{end}}>-- กรุณาเลือกหมวดหมู่ --</option>
+                                <option value="ไฟฟ้า" {{if eq .Category "ไฟฟ้า"}}selected{{end}}>⚡ ไฟฟ้า / หลอดไฟ / สวิตช์ / ปลั๊ก</option>
+                                <option value="ประปา" {{if eq .Category "ประปา"}}selected{{end}}>🚰 ประปา / ก๊อกน้ำ / ท่อน้ำรั่วซึม</option>
+                                <option value="แอร์และพัดลม" {{if eq .Category "แอร์และพัดลม"}}selected{{end}}>❄️ แอร์ไม่เย็น / พัดลมเสีย</option>
+                                <option value="เฟอร์นิเจอร์" {{if eq .Category "เฟอร์นิเจอร์"}}selected{{end}}>🪑 โต๊ะ / เก้าอี้ / เตียง / ประตู / หน้าต่าง</option>
+                                <option value="สุขภัณฑ์" {{if eq .Category "สุขภัณฑ์"}}selected{{end}}>🚽 สุขภัณฑ์ / ชักโครก / ฝักบัว</option>
+                                <option value="อื่นๆ" {{if eq .Category "อื่นๆ"}}selected{{end}}>🔧 อื่นๆ</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="title" class="form-label fw-semibold">หัวข้อปัญหา <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="title" name="title" placeholder="เช่น ก๊อกน้ำอ่างล้างหน้ารั่วซึม, แอร์มีแต่ลมร้อน" required value="{{.TitleInput}}">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="description" class="form-label fw-semibold">รายละเอียดปัญหา <span class="text-danger">*</span></label>
+                        <textarea class="form-control" id="description" name="description" rows="4" placeholder="อธิบายอาการของปัญหา เช่น น้ำหยดตลอดเวลาแม้จะปิดวาล์วแล้ว เพื่อให้ช่างเตรียมอุปกรณ์ได้ถูกต้อง" required>{{.Description}}</textarea>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="convenient_time" class="form-label fw-semibold">ช่วงเวลาที่สะดวกให้ช่างเข้าห้องพัก <span class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light text-muted"><i class="bi bi-clock"></i></span>
+                            <input type="text" class="form-control" id="convenient_time" name="convenient_time" placeholder="เช่น วันจันทร์-พุธ หลัง 16:30 น. หรือ วันเสาร์ทั้งวัน" required value="{{.ConvenientTime}}">
+                        </div>
+                        <div class="form-text small text-muted">ช่างจะประสานงานเข้าซ่อมตามช่วงเวลาที่ท่านสะดวก</div>
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-2 pt-2 border-top">
+                        <a href="/user/requests" class="btn btn-outline-secondary">ยกเลิก</a>
+                        <button type="submit" class="btn btn-primary-dormfix d-flex align-items-center gap-1">
+                            <i class="bi bi-send"></i> ส่งคำขอแจ้งซ่อม
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{{end}}

@@ -1,0 +1,74 @@
+{{template "base" .}}
+
+{{define "content"}}
+<div class="auth-container" style="max-width: 520px;">
+    <div class="card card-dormfix">
+        <div class="card-header-dormfix">
+            <div class="d-inline-flex p-3 rounded-circle bg-success bg-opacity-10 text-success mb-2">
+                <i class="bi bi-person-plus-fill fs-1"></i>
+            </div>
+            <h4 class="fw-bold mb-1">ลงทะเบียนผู้เช่าห้องพัก</h4>
+            <p class="text-muted small mb-0">ระบบจะผูกบัญชีเข้ากับเลขห้องพักของท่าน</p>
+        </div>
+        <div class="card-body p-4">
+            <div class="alert alert-info py-2 px-3 small d-flex align-items-center gap-2 mb-3">
+                <i class="bi bi-info-circle-fill text-info flex-shrink-0 fs-5"></i>
+                <span>บัญชีที่สมัครใหม่จะมีสถานะ <strong>รอดำเนินการ (Pending)</strong> เจ้าหน้าที่จะตรวจสอบข้อมูลและอนุมัติเลขห้องก่อนเข้าใช้งาน</span>
+            </div>
+
+            <form action="/register" method="POST">
+                <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
+
+                <div class="mb-3">
+                    <label for="username" class="form-label fw-semibold">เลขห้องพัก (Username) <span class="text-danger">*</span></label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-light text-muted"><i class="bi bi-door-closed"></i></span>
+                        <input type="text" class="form-control" id="username" name="username" placeholder="เช่น A303, B102" required value="{{.Username}}" autofocus>
+                    </div>
+                    <div class="form-text small text-muted">ระบบจะแปลงเป็นตัวพิมพ์ใหญ่ให้อัตโนมัติ</div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="full_name" class="form-label fw-semibold">ชื่อ - นามสกุลจริง <span class="text-danger">*</span></label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-light text-muted"><i class="bi bi-person"></i></span>
+                        <input type="text" class="form-control" id="full_name" name="full_name" placeholder="เช่น นายสมชาย ใจดี" required value="{{.FullName}}">
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="phone" class="form-label fw-semibold">เบอร์โทรศัพท์ติดต่อ <span class="text-danger">*</span></label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-light text-muted"><i class="bi bi-telephone"></i></span>
+                        <input type="tel" class="form-control" id="phone" name="phone" placeholder="เช่น 0812345678" required value="{{.Phone}}">
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="password" class="form-label fw-semibold">รหัสผ่าน <span class="text-danger">*</span></label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-light text-muted"><i class="bi bi-lock"></i></span>
+                        <input type="password" class="form-control" id="password" name="password" placeholder="กำหนดรหัสผ่านอย่างน้อย 6 ตัวอักษร" required minlength="6">
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label for="confirm_password" class="form-label fw-semibold">ยืนยันรหัสผ่าน <span class="text-danger">*</span></label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-light text-muted"><i class="bi bi-lock-fill"></i></span>
+                        <input type="password" class="form-control" id="confirm_password" name="confirm_password" placeholder="กรอกรหัสผ่านอีกครั้ง" required minlength="6">
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary-dormfix w-100 py-2 d-flex align-items-center justify-content-center gap-2">
+                    <i class="bi bi-check-circle"></i> ยืนยันการสมัครสมาชิก
+                </button>
+            </form>
+        </div>
+        <div class="card-footer bg-light border-0 py-3 text-center rounded-bottom">
+            <span class="text-muted small">มีบัญชีห้องพักอยู่แล้ว?</span>
+            <a href="/login" class="fw-semibold text-decoration-none small ms-1 text-primary">เข้าสู่ระบบ</a>
+        </div>
+    </div>
+</div>
+{{end}}

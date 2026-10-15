@@ -1,0 +1,67 @@
+{{template "base" .}}
+
+{{define "content"}}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <nav aria-label="breadcrumb" class="mb-3">
+            <ol class="breadcrumb small">
+                <li class="breadcrumb-item"><a href="/user/requests" class="text-decoration-none text-muted">ประวัติแจ้งซ่อม</a></li>
+                <li class="breadcrumb-item"><a href="/user/requests/{{.Request.ID}}" class="text-decoration-none text-muted">ใบแจ้งซ่อม #{{.Request.ID}}</a></li>
+                <li class="breadcrumb-item active">แก้ไข</li>
+            </ol>
+        </nav>
+
+        <div class="card card-dormfix">
+            <div class="card-header-dormfix bg-light py-3">
+                <h4 class="fw-bold mb-1"><i class="bi bi-pencil text-warning me-2"></i>แก้ไขใบแจ้งซ่อม #{{.Request.ID}}</h4>
+                <p class="text-muted small mb-0">สามารถแก้ไขข้อมูลได้เฉพาะคำร้องที่ยังอยู่ในสถานะรอดำเนินการ</p>
+            </div>
+            <div class="card-body p-4">
+                <form action="/user/requests/{{.Request.ID}}/edit" method="POST">
+                    <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
+
+                    <div class="row mb-3">
+                        <div class="col-md-6 mb-3 mb-md-0">
+                            <label class="form-label fw-semibold">เลขห้องพัก</label>
+                            <input type="text" class="form-control bg-light" value="{{.Request.RoomNo}}" readonly>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="category" class="form-label fw-semibold">หมวดหมู่ปัญหา <span class="text-danger">*</span></label>
+                            <select class="form-select" id="category" name="category" required>
+                                <option value="ไฟฟ้า" {{if eq .Request.Category "ไฟฟ้า"}}selected{{end}}>⚡ ไฟฟ้า / หลอดไฟ / สวิตช์ / ปลั๊ก</option>
+                                <option value="ประปา" {{if eq .Request.Category "ประปา"}}selected{{end}}>🚰 ประปา / ก๊อกน้ำ / ท่อน้ำรั่วซึม</option>
+                                <option value="แอร์และพัดลม" {{if eq .Request.Category "แอร์และพัดลม"}}selected{{end}}>❄️ แอร์ไม่เย็น / พัดลมเสีย</option>
+                                <option value="เฟอร์นิเจอร์" {{if eq .Request.Category "เฟอร์นิเจอร์"}}selected{{end}}>🪑 โต๊ะ / เก้าอี้ / เตียง / ประตู / หน้าต่าง</option>
+                                <option value="สุขภัณฑ์" {{if eq .Request.Category "สุขภัณฑ์"}}selected{{end}}>🚽 สุขภัณฑ์ / ชักโครก / ฝักบัว</option>
+                                <option value="อื่นๆ" {{if eq .Request.Category "อื่นๆ"}}selected{{end}}>🔧 อื่นๆ</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="title" class="form-label fw-semibold">หัวข้อปัญหา <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="title" name="title" value="{{.Request.Title}}" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="description" class="form-label fw-semibold">รายละเอียดปัญหา <span class="text-danger">*</span></label>
+                        <textarea class="form-control" id="description" name="description" rows="4" required>{{.Request.Description}}</textarea>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="convenient_time" class="form-label fw-semibold">ช่วงเวลาที่สะดวกให้ช่างเข้าห้องพัก <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="convenient_time" name="convenient_time" value="{{.Request.ConvenientTime}}" required>
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-2 pt-2 border-top">
+                        <a href="/user/requests/{{.Request.ID}}" class="btn btn-outline-secondary">ยกเลิก</a>
+                        <button type="submit" class="btn btn-primary-dormfix d-flex align-items-center gap-1">
+                            <i class="bi bi-save"></i> บันทึกการแก้ไข
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{{end}}

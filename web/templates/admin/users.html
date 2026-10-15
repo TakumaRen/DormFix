@@ -1,0 +1,160 @@
+{{template "base" .}}
+
+{{define "content"}}
+<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+    <div>
+        <h3 class="fw-bold mb-1"><i class="bi bi-people text-primary me-2"></i>จัดการบัญชีผู้เช่าห้องพัก</h3>
+        <p class="text-muted small mb-0">ตรวจสอบ อนุมัติการเข้าใช้งาน ระงับบัญชี และจัดเก็บบัญชีผู้เช่าย้ายออก</p>
+    </div>
+    <div>
+        <a href="/admin/dashboard" class="btn btn-outline-secondary btn-sm d-flex align-items-center gap-1">
+            <i class="bi bi-arrow-left"></i> กลับไปแดชบอร์ด
+        </a>
+    </div>
+</div>
+
+<!-- Status Filter Tabs -->
+<div class="card card-dormfix p-2 mb-4">
+    <ul class="nav nav-pills gap-1">
+        <li class="nav-item">
+            <a class="nav-link py-1 px-3 {{if eq .StatusFilter ""}}active bg-primary{{else}}text-dark{{end}}" href="/admin/users">
+                ทั้งหมด
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link py-1 px-3 {{if eq .StatusFilter "pending"}}active bg-warning text-dark{{else}}text-dark{{end}}" href="/admin/users?status=pending">
+                รออนุมัติ
+                {{if gt .PendingCount 0}}
+                    <span class="badge bg-danger ms-1">{{.PendingCount}}</span>
+                {{end}}
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link py-1 px-3 {{if eq .StatusFilter "active"}}active bg-success{{else}}text-dark{{end}}" href="/admin/users?status=active">
+                ใช้งานอยู่ (Active)
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link py-1 px-3 {{if eq .StatusFilter "suspended"}}active bg-danger{{else}}text-dark{{end}}" href="/admin/users?status=suspended">
+                ถูกระงับ (Suspended)
+            </a>
+        </li>
+    </ul>
+</div>
+
+<!-- Users Table -->
+{{if not .Users}}
+    <div class="card card-dormfix p-5 text-center my-4">
+        <div class="d-inline-flex p-3 rounded-circle bg-light text-muted mx-auto mb-3">
+            <i class="bi bi-person-x fs-1"></i>
+        </div>
+        <h5 class="fw-bold">ไม่พบบัญชีผู้ใช้</h5>
+        <p class="text-muted small mb-0">ไม่มีบัญชีผู้เช่าที่ตรงกับตัวกรองในขณะนี้</p>
+    </div>
+{{else}}
+    <div class="card card-dormfix overflow-hidden">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th class="ps-3" style="width: 70px;">ID</th>
+                        <th style="width: 130px;">เลขห้อง / Username</th>
+                        <th>ชื่อ - นามสกุล</th>
+                        <th>เบอร์โทรศัพท์</th>
+                        <th>ประเภท</th>
+                        <th class="text-center">สถานะ</th>
+                        <th>วันที่สมัคร</th>
+                        <th class="text-end pe-3" style="min-width: 200px;">การจัดการ</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{range .Users}}
+                        <tr {{if eq .ID $.User.ID}}class="table-light"{{end}}>
+                            <td class="ps-3 fw-bold text-muted">#{{.ID}}</td>
+                            <td>
+                                <span class="badge bg-light text-dark border fw-bold fs-6">
+                                    {{.Username}}
+                                </span>
+                            </td>
+                            <td>
+                                <span class="fw-semibold text-dark">{{.FullName}}</span>
+                                {{if eq .ID $.User.ID}}
+                                    <span class="badge bg-primary ms-1">บัญชีของคุณ</span>
+                                {{end}}
+                            </td>
+                            <td class="small text-muted">
+                                {{if .Phone}}{{.Phone}}{{else}}-{{end}}
+                            </td>
+                            <td>
+                                {{if eq .Role "admin"}}
+                                    <span class="badge bg-warning text-dark"><i class="bi bi-shield-lock-fill me-1"></i> Admin</span>
+                                {{else}}
+                                    <span class="badge bg-secondary bg-opacity-10 text-dark border"><i class="bi bi-person me-1"></i> ผู้เช่า</span>
+                                {{end}}
+                            </td>
+                            <td class="text-center">
+                                {{if eq .Status "pending"}}
+                                    <span class="badge badge-pending px-2 py-1"><i class="bi bi-hourglass me-1"></i> รออนุมัติ</span>
+                                {{else if eq .Status "active"}}
+                                    <span class="badge badge-active px-2 py-1"><i class="bi bi-check-circle me-1"></i> ใช้งานได้</span>
+                                {{else if eq .Status "suspended"}}
+                                    <span class="badge bg-danger bg-opacity-10 text-danger border border-danger px-2 py-1"><i class="bi bi-dash-circle me-1"></i> ถูกระงับ</span>
+                                {{else if eq .Status "archived"}}
+                                    <span class="badge bg-secondary bg-opacity-25 text-secondary border px-2 py-1"><i class="bi bi-archive me-1"></i> จัดเก็บแล้ว</span>
+                                {{end}}
+                            </td>
+                            <td class="small text-muted">{{.CreatedAt.Format "02/01/2006 15:04"}}</td>
+                            <td class="text-end pe-3">
+                                {{if eq .ID $.User.ID}}
+                                    <span class="badge bg-secondary text-white-50">บัญชีปัจจุบัน</span>
+                                {{else}}
+                                    <div class="d-flex justify-content-end gap-1">
+                                        <!-- Approve Button (if pending) -->
+                                        {{if eq .Status "pending"}}
+                                            <form action="/admin/users/{{.ID}}/approve" method="POST" class="d-inline" onsubmit="return confirm('ยืนยันอนุมัติบัญชีห้อง {{.Username}}?');">
+                                                <input type="hidden" name="csrf_token" value="{{$.CSRFToken}}">
+                                                <button type="submit" class="btn btn-success btn-sm d-inline-flex align-items-center gap-1" title="อนุมัติการใช้งาน">
+                                                    <i class="bi bi-check-lg"></i> อนุมัติ
+                                                </button>
+                                            </form>
+                                        {{end}}
+
+                                        <!-- Suspend / Unsuspend Button (if not archived) -->
+                                        {{if eq .Status "active"}}
+                                            <form action="/admin/users/{{.ID}}/suspend" method="POST" class="d-inline" onsubmit="return confirm('ยืนยันระงับบัญชีห้อง {{.Username}}? ผู้เช่าจะไม่สามารถเข้าสู่ระบบได้ทันที');">
+                                                <input type="hidden" name="csrf_token" value="{{$.CSRFToken}}">
+                                                <button type="submit" class="btn btn-outline-danger btn-sm" title="ระงับบัญชี">
+                                                    <i class="bi bi-slash-circle"></i> ระงับ
+                                                </button>
+                                            </form>
+                                        {{else if eq .Status "suspended"}}
+                                            <form action="/admin/users/{{.ID}}/approve" method="POST" class="d-inline" onsubmit="return confirm('ยกเลิกการระงับและเปิดใช้งานบัญชีห้อง {{.Username}} อีกครั้ง?');">
+                                                <input type="hidden" name="csrf_token" value="{{$.CSRFToken}}">
+                                                <button type="submit" class="btn btn-outline-success btn-sm" title="เปิดใช้งานอีกครั้ง">
+                                                    <i class="bi bi-arrow-counterclockwise"></i> ปลดระงับ
+                                                </button>
+                                            </form>
+                                        {{end}}
+
+                                        <!-- Archive Button (when tenant moves out) -->
+                                        {{if ne .Status "archived"}}
+                                            {{if ne .Role "admin"}}
+                                                <form action="/admin/users/{{.ID}}/archive" method="POST" class="d-inline" onsubmit="return confirm('ยืนยันการจัดเก็บ (Archive) บัญชีผู้เช่าย้ายออก?\n\n- ชื่อผู้ใช้จะถูกเปลี่ยนเป็น {{.Username}}_ARCHIVED_{{.ID}}\n- ประวัติใบแจ้งซ่อมเดิมจะยังคงอยู่\n- เลขห้อง {{.Username}} จะว่างให้ผู้เช่าคนใหม่สมัครได้');">
+                                                    <input type="hidden" name="csrf_token" value="{{$.CSRFToken}}">
+                                                    <button type="submit" class="btn btn-outline-secondary btn-sm" title="ย้ายออก / จัดเก็บบัญชีเดิม">
+                                                        <i class="bi bi-archive"></i> ย้ายออก
+                                                    </button>
+                                                </form>
+                                            {{end}}
+                                        {{end}}
+                                    </div>
+                                {{end}}
+                            </td>
+                        </tr>
+                    {{end}}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{{end}}
+{{end}}

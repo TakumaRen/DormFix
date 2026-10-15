@@ -1,0 +1,118 @@
+/* DormFix Custom Stylesheet (Bootstrap 5.3 Enhancement) */
+@import url('https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap');
+
+:root {
+    --df-primary: #1e3a8a;       /* Deep Royal Indigo */
+    --df-primary-hover: #1e40af;
+    --df-accent: #0284c7;        /* Sky Blue */
+    --df-success: #10b981;
+    --df-warning: #f59e0b;
+    --df-danger: #ef4444;
+    --df-bg-subtle: #f8fafc;
+    --df-card-bg: #ffffff;
+    --df-border: #e2e8f0;
+}
+
+body {
+    font-family: 'Prompt', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background-color: var(--df-bg-subtle);
+    color: #1e293b;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Navbar */
+.navbar-dormfix {
+    background-color: var(--df-primary);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.navbar-dormfix .navbar-brand {
+    font-weight: 700;
+    color: #ffffff !important;
+    letter-spacing: 0.5px;
+}
+
+.navbar-dormfix .nav-link {
+    color: rgba(255, 255, 255, 0.85) !important;
+    font-weight: 500;
+    transition: color 0.2s ease;
+}
+
+.navbar-dormfix .nav-link:hover {
+    color: #ffffff !important;
+}
+
+/* Cards & Auth Containers */
+.auth-container {
+    max-width: 480px;
+    margin: 3rem auto;
+}
+
+.card-dormfix {
+    background: var(--df-card-bg);
+    border: 1px solid var(--df-border);
+    border-radius: 1rem;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.025);
+}
+
+.card-header-dormfix {
+    background: transparent;
+    border-bottom: 1px solid var(--df-border);
+    padding: 1.5rem;
+    text-align: center;
+}
+
+.btn-primary-dormfix {
+    background-color: var(--df-primary);
+    border-color: var(--df-primary);
+    color: #ffffff;
+    font-weight: 600;
+    padding: 0.625rem 1.25rem;
+    border-radius: 0.5rem;
+    transition: all 0.2s ease;
+}
+
+.btn-primary-dormfix:hover {
+    background-color: var(--df-primary-hover);
+    border-color: var(--df-primary-hover);
+    color: #ffffff;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px -1px rgba(30, 58, 138, 0.2);
+}
+
+/* Form Controls */
+.form-control:focus, .form-select:focus {
+    border-color: var(--df-accent);
+    box-shadow: 0 0 0 0.25rem rgba(2, 132, 199, 0.2);
+}
+
+/* Status Badges */
+.badge-pending {
+    background-color: #fef3c7;
+    color: #92400e;
+    border: 1px solid #fde68a;
+}
+
+.badge-active {
+    background-color: #d1fae5;
+    color: #065f46;
+    border: 1px solid #a7f3d0;
+}
+
+.badge-suspended {
+    background-color: #fee2e2;
+    color: #991b1b;
+    border: 1px solid #fecaca;
+}
+
+/* Footer */
+footer {
+    margin-top: auto;
+    background-color: #ffffff;
+    border-top: 1px solid var(--df-border);
+    padding: 1.5rem 0;
+    color: #64748b;
+    font-size: 0.875rem;
+}
